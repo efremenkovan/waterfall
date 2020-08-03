@@ -27,7 +27,7 @@ const sketch = ({ context }) => {
 
   // Setup a camera
   const camera = new THREE.PerspectiveCamera(50, 1, 0.001, 10);
-  camera.position.set(0, -0.5, -0.006);
+  camera.position.set(0, -1, -0.06);
   camera.lookAt(new THREE.Vector3());
 
   // Setup camera controller
@@ -45,8 +45,8 @@ const sketch = ({ context }) => {
   	for(let j = 0; j < DOTS_AMOUNT*3; j+=3) {
   		points.set(
   			[
-  				(i/(DOTS_AMOUNT*3) - 0.5)*5.,
-  				(j/(DOTS_AMOUNT*3) - 0.5)*5.,
+  				(i/(DOTS_AMOUNT*3) - 0.5)*15.,
+  				(j/(DOTS_AMOUNT*3) - 0.5)*15.,
   				0.0
 			],
 			i*DOTS_AMOUNT+j,
@@ -72,7 +72,8 @@ const sketch = ({ context }) => {
   	alphaTest: 0.5,
   	transparent: true,
   	depthTest: false,
-  	depthWrite: false
+  	depthWrite: false,
+  	blending: THREE.AdditiveBlending
   });
 
   // Setup a mesh with geometry + material
@@ -90,7 +91,7 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
-    	material.uniforms.time.value = time;
+    	material.uniforms.time.value += 0.06;
       controls.update();
       renderer.render(scene, camera);
     },

@@ -146,20 +146,32 @@ float cnoise(vec4 P){
   return 2.2 * n_xyzw;
 }
 
+varying float vProgress;
+
 void main() {
 	// vUv = uv;
 	vec3 newPos = position;
-	newPos.y -= mod(time/30., 1.0);
-	float progress = smoothstep(0., 1., newPos.y);
-	newPos.z = -progress * newPos.y * newPos.y * newPos.y;
-	// newPos.z = -smoothstep(0., 5., newPos.z);
-	newPos.y += cnoise(vec4(position * 3.0, time))*progress;
-	newPos.y += progress*(time, 3.0);
-	newPos.z += cnoise(vec4(position * 6., time))*progress/10.0;
-	newPos.x += cnoise(vec4(position * 2. * progress*vec3(1.,0.,0.), time))*progress*0.3;
+	newPos.y -= mod(time/30., 3.0);
+	float progress = smoothstep(-1., 4., newPos.y);
+	vProgress = progress;
+	float progress1 = smoothstep(-1., 7., newPos.y);
+	// float playhead = mod(time/1.0, 1.0);
+	newPos.z += -progress * newPos.y * newPos.y * newPos.y;
+
+  
+  vec3 noiseX = position * vec3(1., 1., 1.);
+  vec3 noiseYZ = 2. * (position + time*vec3(0., 0.2, 0.)) * vec3(3., 1., 1.);
+
+	newPos.x += 0.9 * progress * cnoise(vec4(noiseX,time/5.));
+	newPos.yz += 1.5 * progress1 * (cnoise(vec4(noiseYZ,time/5.)) + 0.5);
+
+	// newPos.y += cnoise(vec4(position * 3.0, playhead))*progress;
+	// newPos.y += progress*(sin(playhead*3.14159 * 2.), 3.0);
+	// newPos.z += cnoise(vec4(position * 6., playhead))*progress/10.0;
+	// newPos.x += cnoise(vec4(position * 2. * progress*vec3(1.,0.,0.), playhead))*progress*0.3;
 	// newPos.z += cnoise(vec4(position, time))*(1. - progress)/100.0;
 	vec4 mvPosition = modelViewMatrix * vec4( newPos, 1.0 );
-	gl_PointSize = 32. / (3.0 - mvPosition.z);
+	gl_PointSize = 10. * (1.0 / - mvPosition.z);
 	gl_Position = projectionMatrix * mvPosition;
 }
 
