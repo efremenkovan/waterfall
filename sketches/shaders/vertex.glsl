@@ -151,19 +151,25 @@ varying float vProgress;
 void main() {
 	// vUv = uv;
 	vec3 newPos = position;
-	newPos.y -= mod(time/30., 3.0);
-	float progress = smoothstep(-1., 4., newPos.y);
+	newPos.y -= mod(time, 1.);
+	float progress = smoothstep(-1., 5., newPos.y);
+	float progress1 = smoothstep(-1., 4., newPos.y);
 	vProgress = progress;
-	float progress1 = smoothstep(-1., 7., newPos.y);
-	// float playhead = mod(time/1.0, 1.0);
-	newPos.z += -progress * newPos.y * newPos.y * newPos.y;
+
+	newPos.z += -progress * newPos.y * newPos.y;
+
+  float PI = 3.14159265359;
 
   
-  vec3 noiseX = position * vec3(1., 1., 1.);
-  vec3 noiseYZ = 2. * (position + time*vec3(0., 0.2, 0.)) * vec3(3., 1., 1.);
+  vec3 noiseX = 1.4 * (position*vec3(1.0, .0, 1.) + .1* vec3(cos((time - newPos.y * 2.)*PI*2.)/5. , sin((time - newPos.x *1.)*PI*2.)*2., 0.)) * vec3(5., 1., 1.);
+  vec3 noiseYZ = 0.55 * (newPos*vec3(1.6, 1.0, 0.) + .25* vec3(cos((time *3.+ abs(newPos.y) * 2.)*PI*2.)/8. , sin((time*3. + abs(newPos.y) *1.)*PI*2.)*2., 0.)) * vec3(5., 1., 1.);;
 
-	newPos.x += 0.9 * progress * cnoise(vec4(noiseX,time/5.));
-	newPos.yz += 1.5 * progress1 * (cnoise(vec4(noiseYZ,time/5.)) + 0.5);
+  // vec3 noiseX = 1. * vec3(cos(time*PI*2.), sin(time*PI*2.), 0.);
+  // vec3 noiseYZ = vec3(1.);
+  
+
+	newPos.x += 0.2 * progress * cnoise(vec4(noiseX,1./30.));
+	newPos.yz += 0.9 * progress1 * (cnoise(vec4(noiseYZ,21./2.)) + 0.3);
 
 	// newPos.y += cnoise(vec4(position * 3.0, playhead))*progress;
 	// newPos.y += progress*(sin(playhead*3.14159 * 2.), 3.0);
@@ -171,7 +177,7 @@ void main() {
 	// newPos.x += cnoise(vec4(position * 2. * progress*vec3(1.,0.,0.), playhead))*progress*0.3;
 	// newPos.z += cnoise(vec4(position, time))*(1. - progress)/100.0;
 	vec4 mvPosition = modelViewMatrix * vec4( newPos, 1.0 );
-	gl_PointSize = 10. * (1.0 / - mvPosition.z);
+	gl_PointSize = 8. * (1.0 / - mvPosition.z);
 	gl_Position = projectionMatrix * mvPosition;
 }
 

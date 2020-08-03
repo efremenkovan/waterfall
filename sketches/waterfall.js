@@ -12,6 +12,8 @@ const canvasSketch = require("canvas-sketch");
 const settings = {
   // Make the loop animated
   animate: true,
+  duration: 5,
+  dimensions: [1080, 1920],
   // Get a WebGL canvas rather than 2D
   context: "webgl"
 };
@@ -26,7 +28,7 @@ const sketch = ({ context }) => {
   renderer.setClearColor("#000", 1);
 
   // Setup a camera
-  const camera = new THREE.PerspectiveCamera(50, 1, 0.001, 10);
+  const camera = new THREE.PerspectiveCamera(70, 1, 0.001, 10);
   camera.position.set(0, -1, -0.06);
   camera.lookAt(new THREE.Vector3());
 
@@ -39,7 +41,7 @@ const sketch = ({ context }) => {
   // Setup a geometry
   // const geometry = new THREE.PlaneGeometry(1, 1, 16, 16);
   const geometry = new THREE.BufferGeometry();
-  const DOTS_AMOUNT = 500;
+  const DOTS_AMOUNT = 1000;
   const points = new Float32Array(DOTS_AMOUNT*DOTS_AMOUNT*3);
   for(let i = 0; i < DOTS_AMOUNT*3; i+=3) {
   	for(let j = 0; j < DOTS_AMOUNT*3; j+=3) {
@@ -90,8 +92,12 @@ const sketch = ({ context }) => {
       camera.updateProjectionMatrix();
     },
     // Update & render your scene here
-    render({ time }) {
-    	material.uniforms.time.value += 0.06;
+
+    render({ time, playhead }) {
+      function map(f1, t1, f2, t2, p) {
+        return f2+(t2-f2)*p/(t1-f1)
+      }
+    	material.uniforms.time.value = playhead;
       controls.update();
       renderer.render(scene, camera);
     },
